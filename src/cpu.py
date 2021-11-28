@@ -4,7 +4,12 @@ class CPU:
         # general purpose registers
         self.v = bytearray(16)
         # 16bit memory address holder register
-        self.I = bytearray(2)
+        self.I = 0
         # timers and sounds special purpose registers
-        self.sr = bytearray(1)
-        self.sr2 = bytearray(1)
+        self.delayTimer = 0
+        self.soundTimer = 0
+        # pseudo registers
+        self.sp = 0 # stack pointer this we may not need to use
+        self.pc = 0x200 # program counter
+        # call stack
+        self.stack = []
