@@ -27,5 +27,5 @@ class Keyboard:
         self.keys_pressed = []
         self.master.bind('<Key>', self.keys_bind_events)
     
-    def keys_bind_events():
-        
+    def keys_bind_events(event):
+        print(event.char)
