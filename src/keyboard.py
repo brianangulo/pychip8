@@ -1,11 +1,9 @@
-from tkinter import Tk
-
 class Keyboard:
-    """[summary]
-    keyboard class takes in a tkinter master
     """
-    def __init__(self, master) -> None:
-        self.master = Tk()
+    keyboard mapper
+    """
+
+    def __init__(self) -> None:
         self.key_map = {
             '1': 0x01,
             '2': 0x02,
@@ -25,7 +23,6 @@ class Keyboard:
             'f': 0x0f,
         }
         self.keys_pressed = []
-        self.master.bind('<Key>', self.keys_bind_events)
-    
+
     def keys_bind_events(event):
         print(event.char)
