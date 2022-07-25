@@ -42,6 +42,10 @@ class Renderer:
         # exit engine once out of the loop
         pygame.quit()
 
+    def play_beep(self):
+        #TODO: finish play beep functionality
+        pass
+
     def create_screen_map(self):
         # y, x
         tmp_2d = []
