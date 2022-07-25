@@ -1,6 +1,7 @@
 class CPU:
-    def __init__(self) -> None:
-        self.memory = bytearray(4096)
+    def __init__(self, memory, renderer):
+        self.renderer = renderer
+        self.memory = memory
         # general purpose registers
         self.v = bytearray(16)
         # 16bit memory address holder register
