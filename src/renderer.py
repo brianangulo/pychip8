@@ -25,8 +25,6 @@ class Renderer:
         self.refresh_rate = 60
 
     def run(self):
-        self.flip_pixel(0, 0)
-        self.flip_pixel(32, 16)
         self.screen_loop()
 
     def screen_loop(self):
@@ -43,7 +41,7 @@ class Renderer:
         pygame.quit()
 
     def play_beep(self):
-        #TODO: finish play beep functionality
+        # TODO: finish play beep functionality
         pass
 
     def create_screen_map(self):
@@ -62,6 +60,9 @@ class Renderer:
             self.pixel_map[y][x] = 1
         else:
             self.pixel_map[y][x] = 0
+
+    def clear_screen(self):
+        pass
 
     def drawing(self):
         for index, row in enumerate(self.pixel_map):
