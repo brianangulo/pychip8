@@ -1,5 +1,4 @@
 from typing import Sequence
-import pygame
 
 
 class Keyboard:
@@ -7,7 +6,7 @@ class Keyboard:
     keyboard mapper
     """
 
-    def __init__(self, _pygame: pygame) -> None:
+    def __init__(self, _pygame) -> None:
         self.key_map = {
             _pygame.K_0: 0x00,
             _pygame.K_1: 0x01,
