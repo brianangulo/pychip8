@@ -220,7 +220,6 @@ class CPU:
             random_num = randint(0, 255)
             self.V[x] = random_num & kk
         elif key == 0xD:
-            # TODO: write drawing logic
             # Dxyn - DRW Vx, Vy, nibble
             # Display n-byte sprite starting at memory location I at (Vx, Vy), set VF = collision.
             # The interpreter reads n bytes from memory, starting at the address stored in I.
@@ -230,7 +229,42 @@ class CPU:
             # otherwise it is set to 0.
             # If the sprite is positioned so part of it is outside the coordinates of the display,
             # it wraps around to the opposite side of the screen.
-            pass
+            n_idx = 0
+            sprite = []
+            # reading sprite data from memory
+            while n_idx < n:
+                sprite.append(self.memory[self.I + n_idx])
+                n_idx += 1
+            # starting mask
+            mask = 0x80
+            # 2d array will hold sprite data
+            sprite_map = []
+            for byte in sprite:
+                idx = 0
+                # 1d array for each sprite row
+                sprite_row = []
+                while idx < 8:
+                    # reading single bit values from the sprite byte and adding them to the row
+                    sprite_row.append((byte & (mask >> idx)) >> (7 - idx))
+                    idx += 1
+                # adding rows to the map
+                sprite_map.append(sprite_row)
+            # painting the sprite map to the screen
+            collisions = []
+            for idx_y, row in enumerate(sprite_map):
+                for idx_x, bit in enumerate(row):
+                    # accounting for wrapping starting behavior for x and y
+                    xx = self.V[x] & (self.renderer.columns - 1)
+                    yy = self.V[y] & (self.renderer.rows - 1)
+                    collided = self.renderer.set_pixel(
+                        xx + idx_x, yy + idx_y, bit)
+                    collisions.append(collided)
+            # checking for collisions
+            if any(collisions):
+                self.V[0xF] = 1
+            else:
+                self.V[0xF] = 0
+
         elif key == 0xE:
             # keyboard instructions
             # TODO: finalize keyboard logic
