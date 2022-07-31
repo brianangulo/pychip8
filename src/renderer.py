@@ -1,4 +1,5 @@
 import pygame
+import sys
 
 # colors
 BLACK = (0, 0, 0)
@@ -39,6 +40,7 @@ class Renderer:
             self.clock.tick(self.refresh_rate)
         # exit engine once out of the loop
         pygame.quit()
+        sys.exit()
 
     def play_beep(self):
         # TODO: finish play beep functionality
