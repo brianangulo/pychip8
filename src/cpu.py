@@ -1,15 +1,17 @@
-from renderer import Renderer
-from keyboard import Keyboard
 from sprites import sprites
 from random import randint
 
+TEST = 'test_opcode.ch8'
+BLINKY = 'BLINKY'
+BLITZ = 'BLITZ'
 
 class CPU:
-    def __init__(self, memory: bytearray, renderer: Renderer, keyboard: Keyboard):
+    def __init__(self, memory: bytearray, renderer, keyboard, file: str = BLITZ, speed: int = 10):
         self.renderer = renderer
         self.memory = memory
         self.keyboard = keyboard
         self.is_paused = False
+        self.speed = speed
         # general purpose registers where x is a hexadecimal digit (0 through F)
         # VF register should not be used by any program, as it is used as a flag by some instructions
         self.V = bytearray(16)
@@ -24,18 +26,20 @@ class CPU:
         self.PC = 0x200  # program counter
         # subroutine return adresses stack
         self.stack = []
-        # loading sprites should run after memory has been initialized
+        # loading sprites and program should run after memory has been initialized
         self.load_sprites()
+        self.load_program(file)
 
     def run_timers(self):
-        # delay timer
-        if self.DT != 0:
-            self.DT -= 1
-        # sound timer
-        if self.ST != 0:
-            self.renderer.play_beep()
-            # play beep?
-            self.ST -= 1
+        if not self.is_paused:
+            # delay timer
+            if self.DT != 0:
+                self.DT -= 1
+            # sound timer
+            if self.ST != 0:
+                self.renderer.play_beep()
+                # play beep?
+                self.ST -= 1
 
     def load_sprites(self):
         mem_idx = 0
@@ -45,10 +49,30 @@ class CPU:
                 # count up memory index
                 mem_idx += 1
 
+    def load_program(self, file):
+        with open(file, 'rb') as file_t:
+            blob_data = list(file_t.read())
+            for idx, byte in enumerate(blob_data):
+                self.memory[0x200 + idx] = byte
+            file_t.close()
+
+    def cycle(self):
+        """Cycles fetch and execute instructions based on speed. 
+            They should run only 1 per frame 60fps"""
+        if not self.is_paused:
+            idx = 0
+            while idx < self.speed:
+                instruction = self.fetch_instructions()
+                self.run_instruction(instruction)
+                idx += 1
+
     def fetch_instructions(self):
-        # TODO: create instruction fetching logic
+        byte_1 = self.memory[self.PC]
+        byte_2 = self.memory[self.PC + 1]
+        instruction = (byte_1 << 8) | byte_2
         # incrementing counter by 2 as each instruction is 2 bytes long
         self.PC += 2
+        return instruction
 
     def run_instruction(self, instruction: int):
         # instructions are 16 bits long
@@ -119,7 +143,7 @@ class CPU:
             # 7xkk - ADD Vx, byte
             # Set Vx = Vx + kk.
             # Adds the value kk to the value of register Vx, then stores the result in Vx.
-            self.V[x] = self.V[x] + kk
+            self.V[x] = (self.V[x] + kk) & 0xFF
         elif key == 0x8:
             # further decoding and executing 8s
             key_8 = instruction & 0x000F
@@ -167,7 +191,7 @@ class CPU:
                     self.V[0xF] = 1
                 else:
                     self.V[0xF] = 0
-                self.V[x] = self.V[x] - self.V[y]
+                self.V[x] = (self.V[x] - self.V[y]) & 0xFF
             elif key_8 == 0x6:
                 # 8xy6 - SHR Vx {, Vy}
                 # Set Vx = Vx SHR 1.
@@ -193,7 +217,7 @@ class CPU:
                 # then VF is set to 1, otherwise to 0. Then Vx is multiplied by 2.
                 self.V[0xF] = self.V[x] & 0x80
                 # hacky *2
-                self.V[x] = self.V[x] << 1
+                self.V[x] = (self.V[x] << 1) & 0xFF
         elif key == 0x9:
             # 9xy0 - SNE Vx, Vy
             # Skip next instruction if Vx != Vy.
@@ -256,9 +280,12 @@ class CPU:
                     # accounting for wrapping starting behavior for x and y
                     xx = self.V[x] & (self.renderer.columns - 1)
                     yy = self.V[y] & (self.renderer.rows - 1)
-                    collided = self.renderer.set_pixel(
-                        xx + idx_x, yy + idx_y, bit)
-                    collisions.append(collided)
+                    try:
+                        collided = self.renderer.set_pixel(
+                            xx + idx_x, yy + idx_y, bit)
+                        collisions.append(collided)
+                    except:
+                        continue
             # checking for collisions
             if any(collisions):
                 self.V[0xF] = 1
@@ -267,7 +294,6 @@ class CPU:
 
         elif key == 0xE:
             # keyboard instructions
-            # TODO: finalize keyboard logic
             key_e = instruction & 0x000F
             if key_e == 0xE:
                 # Ex9E - SKP Vx
