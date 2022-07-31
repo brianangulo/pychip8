@@ -54,15 +54,16 @@ class Renderer:
             tmp_2d.append(tmp_row)
         return tmp_2d
 
-    def flip_pixel(self, x: int, y: int):
+    def set_pixel(self, x: int, y: int, bit: int):
         pixel = self.pixel_map[y][x]
-        if pixel == 0:
-            self.pixel_map[y][x] = 1
+        self.pixel_map[y][x] = self.pixel_map[y][x] ^ bit
+        if pixel == 1 and self.pixel_map[y][x] == 0:
+            return True
         else:
-            self.pixel_map[y][x] = 0
+            return False
 
     def clear_screen(self):
-        pass
+        self.pixel_map = self.create_screen_map()
 
     def drawing(self):
         for index, row in enumerate(self.pixel_map):
