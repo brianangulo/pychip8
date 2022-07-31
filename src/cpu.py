@@ -274,13 +274,15 @@ class CPU:
                 # Skip next instruction if key with the value of Vx is pressed.
                 # Checks the keyboard, and if the key corresponding to the value of Vx
                 # is currently in the down position, PC is increased by 2.
-                pass
+                if self.keyboard.is_key_pressed(self.V[x]):
+                    self.PC += 2
             elif key_e == 0x1:
                 # ExA1 - SKNP Vx
                 # Skip next instruction if key with the value of Vx is not pressed.
                 # Checks the keyboard, and if the key corresponding
                 # to the value of Vx is currently in the up position, PC is increased by 2.
-                pass
+                if not self.keyboard.is_key_pressed(self.V[x]):
+                    self.PC += 2
         elif key == 0xF:
             key_f = instruction & 0x000F
             if key_f == 0x7:
@@ -293,7 +295,14 @@ class CPU:
                 # Wait for a key press, store the value of the key in Vx.
                 # All execution stops until a key is pressed,
                 # then the value of that key is stored in Vx.
-                pass
+                self.is_paused = True
+
+                def next_key_callback(key):
+                    self.V[x] = key
+                    self.keyboard.event_callback = None
+                    self.is_paused = False
+                self.keyboard.set_event_callback(next_key_callback)
+
             elif key_f == 0x5:
                 # Fx15 - LD DT, Vx
                 # Set delay timer = Vx.
