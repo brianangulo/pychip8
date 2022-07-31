@@ -1,5 +1,8 @@
 import pygame
 import sys
+from keyboard import Keyboard
+from cpu import CPU
+from memory import memory
 
 # colors
 BLACK = (0, 0, 0)
@@ -13,6 +16,9 @@ class Renderer:
 
     def __init__(self):
         pygame.init()
+        self.keyboard = Keyboard(pygame)
+        self.memory = memory()
+        self.cpu = CPU(self.memory, self, self.keyboard)
         self.size = (800, 600)
         self.running = True
         self.rows = 32
@@ -33,7 +39,11 @@ class Renderer:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     self.running = False
+            self.keyboard.set_pressed(pygame.key.get_pressed())
             self.screen.fill(WHITE)
+            # timers should run prior to cpu cycle
+            self.cpu.run_timers()
+            self.cpu.cycle()
             # drawing pixels to the screen
             self.drawing()
             pygame.display.flip()
@@ -80,3 +90,6 @@ class Renderer:
     def handle_quit(self):
         if self.running:
             self.running = False
+
+emulator = Renderer()
+emulator.run()
