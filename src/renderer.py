@@ -1,4 +1,8 @@
 import pygame
+import sys
+from keyboard import Keyboard
+from cpu import CPU
+from memory import memory
 
 # colors
 BLACK = (0, 0, 0)
@@ -12,6 +16,9 @@ class Renderer:
 
     def __init__(self):
         pygame.init()
+        self.keyboard = Keyboard(pygame)
+        self.memory = memory()
+        self.cpu = CPU(self.memory, self, self.keyboard)
         self.size = (800, 600)
         self.running = True
         self.rows = 32
@@ -25,8 +32,6 @@ class Renderer:
         self.refresh_rate = 60
 
     def run(self):
-        self.flip_pixel(0, 0)
-        self.flip_pixel(32, 16)
         self.screen_loop()
 
     def screen_loop(self):
@@ -34,13 +39,20 @@ class Renderer:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     self.running = False
+            self.keyboard.set_pressed(pygame.key.get_pressed())
             self.screen.fill(WHITE)
+            self.cpu.cycle()
             # drawing pixels to the screen
             self.drawing()
             pygame.display.flip()
             self.clock.tick(self.refresh_rate)
         # exit engine once out of the loop
         pygame.quit()
+        sys.exit()
+
+    def play_beep(self):
+        # TODO: finish play beep functionality
+        pass
 
     def create_screen_map(self):
         # y, x
@@ -52,12 +64,16 @@ class Renderer:
             tmp_2d.append(tmp_row)
         return tmp_2d
 
-    def flip_pixel(self, x: int, y: int):
+    def set_pixel(self, x: int, y: int, bit: int):
         pixel = self.pixel_map[y][x]
-        if pixel == 0:
-            self.pixel_map[y][x] = 1
+        self.pixel_map[y][x] = self.pixel_map[y][x] ^ bit
+        if pixel == 1 and self.pixel_map[y][x] == 0:
+            return True
         else:
-            self.pixel_map[y][x] = 0
+            return False
+
+    def clear_screen(self):
+        self.pixel_map = self.create_screen_map()
 
     def drawing(self):
         for index, row in enumerate(self.pixel_map):
@@ -73,6 +89,5 @@ class Renderer:
         if self.running:
             self.running = False
 
-
-test = Renderer()
-test.run()
+emulator = Renderer()
+emulator.run()
