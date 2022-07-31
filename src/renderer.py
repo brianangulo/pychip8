@@ -41,8 +41,6 @@ class Renderer:
                     self.running = False
             self.keyboard.set_pressed(pygame.key.get_pressed())
             self.screen.fill(WHITE)
-            # timers should run prior to cpu cycle
-            self.cpu.run_timers()
             self.cpu.cycle()
             # drawing pixels to the screen
             self.drawing()

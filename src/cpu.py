@@ -1,12 +1,12 @@
 from sprites import sprites
 from random import randint
 
-TEST = 'test_opcode.ch8'
-BLINKY = 'BLINKY'
-BLITZ = 'BLITZ'
+TEST = 'roms/test_opcode.ch8'
+BLINKY = 'roms/BLINKY'
+BLITZ = 'roms/BLITZ'
 
 class CPU:
-    def __init__(self, memory: bytearray, renderer, keyboard, file: str = BLITZ, speed: int = 10):
+    def __init__(self, memory: bytearray, renderer, keyboard, file: str = TEST, speed: int = 10):
         self.renderer = renderer
         self.memory = memory
         self.keyboard = keyboard
@@ -33,10 +33,10 @@ class CPU:
     def run_timers(self):
         if not self.is_paused:
             # delay timer
-            if self.DT != 0:
+            if self.DT > 0:
                 self.DT -= 1
             # sound timer
-            if self.ST != 0:
+            if self.ST > 0:
                 self.renderer.play_beep()
                 # play beep?
                 self.ST -= 1
@@ -65,6 +65,7 @@ class CPU:
                 instruction = self.fetch_instructions()
                 self.run_instruction(instruction)
                 idx += 1
+        self.run_timers()
 
     def fetch_instructions(self):
         byte_1 = self.memory[self.PC]
