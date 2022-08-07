@@ -4,9 +4,11 @@ from random import randint
 TEST = 'roms/test_opcode.ch8'
 BLINKY = 'roms/BLINKY'
 BLITZ = 'roms/BLITZ'
+TEST1 = 'roms/chip8-test-suite.ch8'
+
 
 class CPU:
-    def __init__(self, memory: bytearray, renderer, keyboard, file: str = TEST, speed: int = 10):
+    def __init__(self, memory: bytearray, renderer, keyboard, file: str = BLINKY, speed: int = 10):
         self.renderer = renderer
         self.memory = memory
         self.keyboard = keyboard
@@ -22,7 +24,6 @@ class CPU:
         # ST timer also decrements at a rate of 60Hz as long as ST's value is > 0 CHIP8 will buzz
         self.ST = 0
         # pseudo registers
-        self.SP = -1  # stack pointer treating it as a 16 bit
         self.PC = 0x200  # program counter
         # subroutine return adresses stack
         self.stack = []
@@ -99,8 +100,7 @@ class CPU:
                 # Return from a subroutine.
                 # The interpreter sets the program counter to the address at the top of the stack,
                 # then subtracts 1 from the stack pointer.
-                self.PC = self.stack[self.SP]
-                self.SP -= 1
+                self.PC = self.stack.pop()
         elif key == 0x1:
             # 1nnn - JP addr
             # Jump to location nnn.
@@ -111,7 +111,6 @@ class CPU:
             # Call subroutine at nnn.
             # The interpreter increments the stack pointer,
             # then puts the current PC on the top of the stack. The PC is then set to nnn.
-            self.SP += 1
             self.stack.append(self.PC)
             self.PC = nnn
         elif key == 0x3:
@@ -210,7 +209,7 @@ class CPU:
                     self.V[0xF] = 1
                 else:
                     self.V[0xF] = 0
-                self.V[x] = self.V[y] - self.V[x]
+                self.V[x] = (self.V[y] - self.V[x]) & 0xFF
             elif key_8 == 0xE:
                 # 8xyE - SHL Vx {, Vy}
                 # Set Vx = Vx SHL 1.
@@ -324,17 +323,11 @@ class CPU:
                 # then the value of that key is stored in Vx.
                 self.is_paused = True
 
-                def next_key_callback(key):
-                    self.V[x] = key
+                def next_key_callback(key_x):
+                    self.V[x] = key_x
                     self.keyboard.event_callback = None
                     self.is_paused = False
                 self.keyboard.set_event_callback(next_key_callback)
-
-            elif key_f == 0x5:
-                # Fx15 - LD DT, Vx
-                # Set delay timer = Vx.
-                # DT is set equal to the value of Vx.
-                self.DT = self.V[x]
             elif key_f == 0x8:
                 # Fx18 - LD ST, Vx
                 # Set sound timer = Vx.
@@ -350,7 +343,7 @@ class CPU:
                 # Set I = location of sprite for digit Vx.
                 # The value of I is set to the location for the hexadecimal
                 # sprite corresponding to the value of Vx. See section 2.4, Display, for more information on the Chip-8 hexadecimal font.
-                self.I = (self.V[x] & 0x0F) * 5
+                self.I = self.V[x] * 5
             elif key_f == 0x3:
                 # Fx33 - LD B, Vx
                 # Store BCD representation of Vx in memory locations I, I+1, and I+2.
@@ -365,15 +358,16 @@ class CPU:
                     # Fx55 - LD [I], Vx
                     # Store registers V0 through Vx in memory starting at location I.
                     # The interpreter copies the values of registers V0 through Vx into memory, starting at the address in I.
-                    idx = 0
-                    while idx < x:
+                    for idx in range(0, x + 1):
                         self.memory[self.I + idx] = self.V[idx]
-                        idx += 1
+                elif key_f5 == 0x15:
+                    # Fx15 - LD DT, Vx
+                    # Set delay timer = Vx.
+                    # DT is set equal to the value of Vx.
+                    self.DT = self.V[x]
                 elif key_f5 == 0x65:
                     # Fx65 - LD Vx, [I]
                     # Read registers V0 through Vx from memory starting at location I.
                     # The interpreter reads values from memory starting at location I into registers V0 through Vx.
-                    idx = 0
-                    while idx < x:
+                    for idx in range(0, x + 1):
                         self.V[idx] = self.memory[self.I + idx]
-                        idx += 1
