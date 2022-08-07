@@ -4,9 +4,11 @@ from random import randint
 TEST = 'roms/test_opcode.ch8'
 BLINKY = 'roms/BLINKY'
 BLITZ = 'roms/BLITZ'
+TEST1 = 'roms/chip8-test-suite.ch8'
+
 
 class CPU:
-    def __init__(self, memory: bytearray, renderer, keyboard, file: str = BLITZ, speed: int = 10):
+    def __init__(self, memory: bytearray, renderer, keyboard, file: str = BLINKY, speed: int = 10):
         self.renderer = renderer
         self.memory = memory
         self.keyboard = keyboard
@@ -22,7 +24,6 @@ class CPU:
         # ST timer also decrements at a rate of 60Hz as long as ST's value is > 0 CHIP8 will buzz
         self.ST = 0
         # pseudo registers
-        self.SP = -1  # stack pointer treating it as a 16 bit
         self.PC = 0x200  # program counter
         # subroutine return adresses stack
         self.stack = []
@@ -99,8 +100,7 @@ class CPU:
                 # Return from a subroutine.
                 # The interpreter sets the program counter to the address at the top of the stack,
                 # then subtracts 1 from the stack pointer.
-                self.PC = self.stack[self.SP]
-                self.SP -= 1
+                self.PC = self.stack.pop()
         elif key == 0x1:
             # 1nnn - JP addr
             # Jump to location nnn.
@@ -111,7 +111,6 @@ class CPU:
             # Call subroutine at nnn.
             # The interpreter increments the stack pointer,
             # then puts the current PC on the top of the stack. The PC is then set to nnn.
-            self.SP += 1
             self.stack.append(self.PC)
             self.PC = nnn
         elif key == 0x3:
@@ -210,7 +209,7 @@ class CPU:
                     self.V[0xF] = 1
                 else:
                     self.V[0xF] = 0
-                self.V[x] = self.V[y] - self.V[x]
+                self.V[x] = (self.V[y] - self.V[x]) & 0xFF
             elif key_8 == 0xE:
                 # 8xyE - SHL Vx {, Vy}
                 # Set Vx = Vx SHL 1.
@@ -324,8 +323,8 @@ class CPU:
                 # then the value of that key is stored in Vx.
                 self.is_paused = True
 
-                def next_key_callback(key):
-                    self.V[x] = key
+                def next_key_callback(key_x):
+                    self.V[x] = key_x
                     self.keyboard.event_callback = None
                     self.is_paused = False
                 self.keyboard.set_event_callback(next_key_callback)
