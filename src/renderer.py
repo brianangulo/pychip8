@@ -89,6 +89,3 @@ class Renderer:
     def handle_quit(self):
         if self.running:
             self.running = False
-
-emulator = Renderer()
-emulator.run()
