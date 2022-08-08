@@ -44,6 +44,7 @@ class Renderer:
             self.cpu.cycle()
             # drawing pixels to the screen
             self.drawing()
+            print(round(self.clock.get_fps()))
             pygame.display.flip()
             self.clock.tick(self.refresh_rate)
         # exit engine once out of the loop
