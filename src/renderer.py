@@ -16,6 +16,8 @@ class Renderer:
 
     def __init__(self):
         pygame.init()
+        pygame.mixer.init()
+        self.beep = pygame.mixer.Sound('assets/beep.wav')
         self.keyboard = Keyboard(pygame)
         self.memory = memory()
         self.cpu = CPU(self.memory, self, self.keyboard)
@@ -44,15 +46,18 @@ class Renderer:
             self.cpu.cycle()
             # drawing pixels to the screen
             self.drawing()
+            # print(round(self.clock.get_fps()))
             pygame.display.flip()
             self.clock.tick(self.refresh_rate)
         # exit engine once out of the loop
         pygame.quit()
         sys.exit()
 
-    def play_beep(self):
-        # TODO: finish play beep functionality
-        pass
+    def control_beep(self, play: bool):
+        if play:
+            self.beep.play()
+        else:
+            self.beep.stop()
 
     def create_screen_map(self):
         # y, x
@@ -88,6 +93,3 @@ class Renderer:
     def handle_quit(self):
         if self.running:
             self.running = False
-
-emulator = Renderer()
-emulator.run()
