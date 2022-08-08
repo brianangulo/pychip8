@@ -8,7 +8,7 @@ TEST1 = 'roms/chip8-test-suite.ch8'
 
 
 class CPU:
-    def __init__(self, memory: bytearray, renderer, keyboard, file: str = 'roms/Coin Flipping [Carmelo Cortez, 1978].ch8', speed: int = 10):
+    def __init__(self, memory: bytearray, renderer, keyboard, file: str = TEST1, speed: int = 10):
         self.renderer = renderer
         self.memory = memory
         self.keyboard = keyboard
@@ -38,9 +38,10 @@ class CPU:
                 self.DT -= 1
             # sound timer
             if self.ST > 0:
-                self.renderer.play_beep()
-                # play beep?
+                self.renderer.control_beep(True)
                 self.ST -= 1
+            else:
+                self.renderer.control_beep(False)
 
     def load_sprites(self):
         mem_idx = 0
