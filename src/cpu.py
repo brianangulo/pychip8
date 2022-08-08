@@ -8,7 +8,7 @@ TEST1 = 'roms/chip8-test-suite.ch8'
 
 
 class CPU:
-    def __init__(self, memory: bytearray, renderer, keyboard, file: str = BLINKY, speed: int = 10):
+    def __init__(self, memory: bytearray, renderer, keyboard, file: str = 'roms/Coin Flipping [Carmelo Cortez, 1978].ch8', speed: int = 10):
         self.renderer = renderer
         self.memory = memory
         self.keyboard = keyboard
