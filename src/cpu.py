@@ -1,14 +1,9 @@
 from sprites import sprites
 from random import randint
-
-TEST = 'roms/test_opcode.ch8'
-BLINKY = 'roms/BLINKY'
-BLITZ = 'roms/BLITZ'
-TEST1 = 'roms/chip8-test-suite.ch8'
-
+from test_program import TEST_PROGRAM
 
 class CPU:
-    def __init__(self, memory: bytearray, renderer, keyboard, file: str = TEST1, speed: int = 10):
+    def __init__(self, memory: bytearray, renderer, keyboard, file: str = None, speed: int = 10):
         self.renderer = renderer
         self.memory = memory
         self.keyboard = keyboard
@@ -29,7 +24,15 @@ class CPU:
         self.stack = []
         # loading sprites and program should run after memory has been initialized
         self.load_sprites()
-        self.load_program(file)
+        # if we have a file location then we load that otherwise we load embedded test program
+        if file:
+            self.load_program(file)
+        else: 
+            self.load_test_program()
+    # loads embedded test program
+    def load_test_program(self):
+        for idx, byte in enumerate(TEST_PROGRAM):
+            self.memory[0x200 + idx] = byte
 
     def run_timers(self):
         if not self.is_paused:
