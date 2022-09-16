@@ -3,6 +3,8 @@ import sys
 from keyboard import Keyboard
 from cpu import CPU
 from memory import memory
+from toolbar import Toolbar
+from filedialog import Filedialog
 
 # colors
 BLACK = (0, 0, 0)
@@ -21,7 +23,7 @@ class Renderer:
         self.keyboard = Keyboard(pygame)
         self.memory = memory()
         self.cpu = CPU(self.memory, self, self.keyboard)
-        self.size = (800, 600)
+        self.size = (800, 650)
         self.running = True
         self.rows = 32
         self.columns = 64
@@ -32,6 +34,18 @@ class Renderer:
         pygame.display.set_caption('Chip 8 Emulator')
         self.clock = pygame.time.Clock()
         self.refresh_rate = 60
+        self.toolbar = Toolbar(self.size[0], 50, self.load_rom, pygame)
+        self.filedialog = Filedialog()
+
+    def load_rom(self):
+        # grab a file through easygui
+        self.filedialog.launch()
+        # clear screen
+        self.clear_screen()
+        # clear VM memory
+        self.memory = memory()
+        # restart cpu with a new file
+        self.cpu = CPU(self.memory, self, self.keyboard, self.filedialog.file)
 
     def run(self):
         self.screen_loop()
@@ -46,7 +60,7 @@ class Renderer:
             self.cpu.cycle()
             # drawing pixels to the screen
             self.drawing()
-            # print(round(self.clock.get_fps()))
+            self.toolbar.draw(self.screen)
             pygame.display.flip()
             self.clock.tick(self.refresh_rate)
         # exit engine once out of the loop
