@@ -17,9 +17,12 @@ class Renderer:
     """Gluing it all together"""
 
     def __init__(self):
+        # this must be instantiated before pygame.init()
+        # it prevents SDL crashes when using tkinter by embedding the windows
+        self.filedialog = Filedialog()
         pygame.init()
         pygame.mixer.init()
-        self.beep = pygame.mixer.Sound('assets/beep.wav')
+        self.beep = pygame.mixer.Sound('../assets/beep.wav')
         self.keyboard = Keyboard(pygame)
         self.memory = memory()
         self.cpu = CPU(self.memory, self, self.keyboard)
@@ -30,12 +33,11 @@ class Renderer:
         # creating pixel map
         self.pixel_map = self.create_screen_map()
         self.screen = pygame.display.set_mode(self.size)
-        # udpating window's caption
+        # updating window's caption
         pygame.display.set_caption('Chip 8 Emulator')
         self.clock = pygame.time.Clock()
         self.refresh_rate = 60
         self.toolbar = Toolbar(self.size[0], 50, self.load_rom, pygame)
-        self.filedialog = Filedialog()
 
     def load_rom(self):
         # grab a file through easygui
