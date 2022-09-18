@@ -40,14 +40,15 @@ class Renderer:
         self.toolbar = Toolbar(self.size[0], 50, self.load_rom, pygame)
 
     def load_rom(self):
-        # grab a file through easygui
+        # grab a file through tkinter
         self.filedialog.launch()
-        # clear screen
-        self.clear_screen()
-        # clear VM memory
-        self.memory = memory()
-        # restart cpu with a new file
-        self.cpu = CPU(self.memory, self, self.keyboard, self.filedialog.file)
+        if self.filedialog.file:
+            # clear screen
+            self.clear_screen()
+            # clear VM memory
+            self.memory = memory()
+            # restart cpu with a new file
+            self.cpu = CPU(self.memory, self, self.keyboard, self.filedialog.file)
 
     def run(self):
         self.screen_loop()
