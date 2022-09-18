@@ -6,7 +6,7 @@ WHITE = (255, 255, 255)
 GREEN = (0, 255, 0)
 RED = (255, 0, 0)
 
-# it should accomadate multiple buttons and handlers in the future
+# it should accommodate multiple buttons and handlers in the future
 
 
 class Toolbar:
@@ -24,5 +24,5 @@ class Toolbar:
     def draw(self, screen):
         screen.blit(self.image, self.rect)
         self.leftbutton.draw(screen)
-        if self.leftbutton.isOver(self.pygame.mouse.get_pos()):
+        if self.leftbutton.on_click():
             self.button_handler()
