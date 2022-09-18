@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from tkinter import filedialog, Tk
 from os import environ
 
@@ -12,7 +14,9 @@ class Filedialog:
         # hiding window
         self.root.withdraw()
 
-    def launch(self) -> str:
+    def launch(self) -> str | None:
         # asking for file
-        self.file = filedialog.askopenfile().name
+        ask = filedialog.askopenfile()
+        if ask:
+            self.file = ask.name
         return self.file
