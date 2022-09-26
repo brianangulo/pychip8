@@ -22,7 +22,7 @@ class Renderer:
         self.filedialog = Filedialog()
         pygame.init()
         pygame.mixer.init()
-        self.beep = pygame.mixer.Sound('../assets/beep.wav')
+        self.beep = pygame.mixer.Sound('assets/beep.wav')
         self.keyboard = Keyboard(pygame)
         self.memory = memory()
         self.cpu = CPU(self.memory, self, self.keyboard)
@@ -58,8 +58,8 @@ class Renderer:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     self.running = False
-            self.keyboard.set_pressed(pygame.key.get_pressed())
             self.screen.fill(WHITE)
+            self.keyboard.set_pressed(pygame.key.get_pressed())
             self.cpu.cycle()
             # drawing pixels to the screen
             self.drawing()
