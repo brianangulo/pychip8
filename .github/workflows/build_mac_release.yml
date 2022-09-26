@@ -1,8 +1,8 @@
 name: Build and Release to GH releases
 
 on:
-  pull_request:
-    branches: [ "main" ]
+  push:
+    branches: ['main']
 
 jobs:
   build:
@@ -27,7 +27,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: PyChip8
-          path: app/PyChip8.dmg
+          path: dist/PyChip8.dmg
 
   release-app:
     name: Release App
@@ -54,5 +54,5 @@ jobs:
         with:
           upload_url: ${{ steps.creates_release.outputs.upload_url }}
           asset_path: ./PyChip8.dmg
-          asset_name: PyChip8-v1.${{ github.run_number }}.0.dmg
+          asset_name: macos_PyChip8-v1.${{ github.run_number }}.0.dmg
           asset_content_type: application/dmg
