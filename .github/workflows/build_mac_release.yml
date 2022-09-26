@@ -12,8 +12,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-      - name: Install pyinstaller
-        run: pip3 install pyinstaller
+      - name: Installing dependencies
+        run: pip3 install -r requirements.txt
       - name: Build
         shell: bash --noprofile --norc -eo pipefail {0}
         run: pyinstaller --windowed --add-data assets:assets --name PyChip8 src/main.py
