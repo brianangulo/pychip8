@@ -1,9 +1,15 @@
+from __future__ import annotations
 from sprites import sprites
 from random import randint
 from test_program import TEST_PROGRAM
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from keyboard import Keyboard
+
 
 class CPU:
-    def __init__(self, memory: bytearray, renderer, keyboard, file: str = None, speed: int = 10):
+    def __init__(self, memory: bytearray, renderer, keyboard: Keyboard, file: str = None, speed: int = 10):
         self.renderer = renderer
         self.memory = memory
         self.keyboard = keyboard
@@ -27,9 +33,10 @@ class CPU:
         # if we have a file location then we load that otherwise we load embedded test program
         if file:
             self.load_program(file)
-        else: 
+        else:
             self.load_test_program()
     # loads embedded test program
+
     def load_test_program(self):
         for idx, byte in enumerate(TEST_PROGRAM):
             self.memory[0x200 + idx] = byte
@@ -64,12 +71,12 @@ class CPU:
     def cycle(self):
         """Cycles fetch and execute instructions based on speed. 
             They should run only 1 per frame 60fps"""
-        if not self.is_paused:
-            idx = 0
-            while idx < self.speed:
+        idx = 0
+        while idx < self.speed:
+            if not self.is_paused:
                 instruction = self.fetch_instructions()
                 self.run_instruction(instruction)
-                idx += 1
+            idx += 1
         self.run_timers()
 
     def fetch_instructions(self):
@@ -329,9 +336,10 @@ class CPU:
 
                 def next_key_callback(key_x):
                     self.V[x] = key_x
-                    self.keyboard.event_callback = None
                     self.is_paused = False
+                    self.keyboard.event_callback = None
                 self.keyboard.set_event_callback(next_key_callback)
+
             elif key_f == 0x8:
                 # Fx18 - LD ST, Vx
                 # Set sound timer = Vx.
