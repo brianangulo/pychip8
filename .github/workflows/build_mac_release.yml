@@ -16,7 +16,7 @@ jobs:
         run: pip3 install -r requirements.txt
       - name: Build
         shell: bash --noprofile --norc -eo pipefail {0}
-        run: pyinstaller --windowed --add-data assets:assets --name PyChip8 src/main.py
+        run: pyinstaller --windowed --add-data assets:assets --name PyChip8 --hidden-import _tkinter src/main.py
       - name: Packaging as DMG
         run: |
           hdiutil create \
