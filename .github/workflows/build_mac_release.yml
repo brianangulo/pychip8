@@ -12,8 +12,11 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.8.9'
       - name: Installing dependencies
-        run: pip3 install -r requirements.txt
+        run: pip3 install -r requirements.txt && pip install -r requirements.txt
       - name: Build
         shell: bash --noprofile --norc -eo pipefail {0}
         run: pyinstaller --windowed --add-data assets:assets --name PyChip8 --hidden-import _tkinter src/main.py
