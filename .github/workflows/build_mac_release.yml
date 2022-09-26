@@ -22,7 +22,7 @@ jobs:
           hdiutil create \
                   -fs HFS+ \
                   -srcfolder "./dist/PyChip8.app" \
-                  -volname "PyChip8" "./app/PyChip8.dmg"
+                  -volname "PyChip8" "./dist/PyChip8.dmg"
       - name: Upload Artifact
         uses: actions/upload-artifact@v3
         with:
