@@ -1,0 +1,58 @@
+name: Build and Release to GH releases
+
+on:
+  push:
+    branches: ['main']
+
+jobs:
+  build:
+    name: Build for macos
+    runs-on: macos-latest
+    environment: prod
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Install pyinstaller
+        run: pip3 install pyinstaller
+      - name: Build
+        shell: bash --noprofile --norc -eo pipefail {0}
+        run: pyinstaller --windowed --add-data assets:assets --name PyChip8 src/main.py
+      - name: Packaging as DMG
+        run: |
+          hdiutil create \
+                  -fs HFS+ \
+                  -srcfolder "./dist/PyChip8.app" \
+                  -volname "PyChip8" "./dist/PyChip8.dmg"
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: PyChip8
+          path: dist/PyChip8.dmg
+
+  release-app:
+    name: Release App
+    runs-on: ubuntu-latest
+    needs: build
+
+    steps:
+      - name: Download site content
+        uses: actions/download-artifact@v3
+        with:
+          name: PyChip8
+      - name: Create GH release
+        id: creates_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: v1.${{ github.run_number }}.0
+          release_name: v1.${{ github.run_number }}.0
+      - name: Upload release artifact
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.creates_release.outputs.upload_url }}
+          asset_path: ./PyChip8.dmg
+          asset_name: macos_PyChip8-v1.${{ github.run_number }}.0.dmg
+          asset_content_type: application/dmg
