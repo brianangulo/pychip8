@@ -1,7 +1,7 @@
 from __future__ import annotations
 from sprites import sprites
 from random import randint
-from test_program import TEST_PROGRAM
+from embedded_test_suite import TEST_PROGRAM
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
@@ -105,7 +105,7 @@ class CPU:
             if instruction == 0x00E0:
                 # 00E0 - CLS
                 # Clear the display.
-                self.renderer.clear_screen()
+                self.renderer.clear_pixels()
             elif instruction == 0x00EE:
                 # 00EE - RET
                 # Return from a subroutine.

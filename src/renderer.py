@@ -44,7 +44,7 @@ class Renderer:
         self.filedialog.launch()
         if self.filedialog.file:
             # clear screen
-            self.clear_screen()
+            self.clear_pixels()
             # clear VM memory
             self.memory = memory()
             # restart cpu with a new file
@@ -94,7 +94,7 @@ class Renderer:
         else:
             return False
 
-    def clear_screen(self):
+    def clear_pixels(self):
         self.pixel_map = self.create_screen_map()
 
     def drawing(self):
