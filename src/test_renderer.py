@@ -1,7 +1,10 @@
 from renderer import Renderer
+from unittest import mock
 import pytest
 
-def test_run_launches_loop():
+@mock.patch('renderer.Filedialog')
+@mock.patch('renderer.pygame')
+def test_run_launches_loop(mock, pygame_mock):
     def mock_screen_loop():
         raise SystemExit(1)
     renderer = Renderer()
@@ -10,7 +13,9 @@ def test_run_launches_loop():
     with pytest.raises(SystemExit):
         renderer.run()
 
-def test_setting_pixels():
+@mock.patch('renderer.Filedialog')
+@mock.patch('renderer.pygame')
+def test_setting_pixels(mock, pygame_mock):
     renderer = Renderer()
     # setting a few pixels for testing
     renderer.set_pixel(0, 0, 1)
@@ -20,7 +25,9 @@ def test_setting_pixels():
     assert renderer.pixel_map[1][1] == 1
     assert renderer.pixel_map[2][2] == 1
 
-def test_clear_pixels():
+@mock.patch('renderer.Filedialog')
+@mock.patch('renderer.pygame')
+def test_clear_pixels(mock, pygame_mock):
     renderer = Renderer()
     # setting a few pixels for testing
     renderer.set_pixel(0, 0, 1)
