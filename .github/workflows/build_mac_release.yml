@@ -2,7 +2,7 @@ name: Build and Release to GH releases
 
 on:
   push:
-    branches: ['main']
+    branches: ['production']
 
 jobs:
   build:

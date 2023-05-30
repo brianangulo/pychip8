@@ -3,3 +3,4 @@ venv
 .idea
 roms
 .pytest_cache
+__pycache__

@@ -2,7 +2,7 @@ name: Unit testing
 
 on:
   pull_request:
-    branches: ['main']
+    branches: ['main', 'production']
 
 jobs:
   build:
