@@ -1,6 +1,6 @@
 venv
 .DS_Store
 .idea
-roms
+rom
 .pytest_cache
 __pycache__

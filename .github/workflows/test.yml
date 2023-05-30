@@ -1,12 +1,10 @@
-name: Unit testing
-
 on:
   pull_request:
     branches: ['main', 'production']
 
 jobs:
   build:
-    name: Build for macos
+    name: Testing with pytest
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
