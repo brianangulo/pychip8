@@ -4,7 +4,7 @@ Based off -> http://devernay.free.fr/hacks/chip8/C8TECH10.HTM#2.4
 ![Emulator running screenshot](screenshot.png)
 
 ### Testing
-Testing is done using `pytest` and `unittest`. Command for running tests:
+Testing is done using `pytest` and `unittest`. The command for running tests:
 
     pytest
 
